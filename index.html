@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر 7zo</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+        header { background: #111; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; }
+        .container { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+        .form-section, .products-section, .cart-section { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .form-section { flex: 1; min-width: 250px; }
+        .products-section { flex: 2; min-width: 300px; }
+        .cart-section { flex: 1; min-width: 250px; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .product-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>متجر 7zo</h1>
+    <div>السلة: <span id="cart-count">0</span> منتجات</div>
+</header>
+
+<div class="container">
+    <!-- لوحة إضافة منتج جديد -->
+    <div class="form-section">
+        <h3>إضافة صنف جديد</h3>
+        <input type="text" id="p-name" placeholder="اسم المنتج">
+        <input type="number" id="p-price" placeholder="السعر (ر.س)">
+        <button onclick="addProduct()">إضافة للمتجر</button>
+    </div>
+
+    <!-- قائمة المنتجات المعروضة -->
+    <div class="products-section">
+        <h3>المنتجات المتاحة</h3>
+        <div id="products-list"></div>
+    </div>
+
+    <!-- سلة الشراء -->
+    <div class="cart-section">
+        <h3>سلة الشراء</h3>
+        <div id="cart-items"></div>
+        <h4>الإجمالي: <span id="total-price">0</span> ر.س</h4>
+    </div>
+</div>
+
+<script>
+    let products = [];
+    let cart = [];
+
+    function addProduct() {
+        const name = document.getElementById('p-name').value;
+        const price = parseFloat(document.getElementById('p-price').value);
+
+        if (!name || isNaN(price)) {
+            alert('يرجى إدخال اسم المنتج والسعر بشكل صحيح');
+            return;
+        }
+
+        products.push({ id: Date.now(), name, price });
+        document.getElementById('p-name').value = '';
+        document.getElementById('p-price').value = '';
+        renderProducts();
+    }
+
+    function renderProducts() {
+        const list = document.getElementById('products-list');
+        list.innerHTML = '';
+        products.forEach(p => {
+            list.innerHTML += `
+                <div class="product-card">
+                    <div><strong>${p.name}</strong> - ${p.price} ر.س</div>
+                    <button style="width: auto;" onclick="addToCart(${p.id})">أضف للسلة</button>
+                </div>
+            `;
+        });
+    }
+
+    function addToCart(id) {
+        const item = products.find(p => p.id === id);
+        cart.push(item);
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartList = document.getElementById('cart-items');
+        cartList.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+            total += item.price;
+            cartList.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <span>${item.price} ر.س</span>
+                </div>
+            `;
+        });
+        document.getElementById('cart-count').innerText = cart.length;
+        document.getElementById('total-price').innerText = total;
+    }
+</script>
+
+</body>
+</html>
