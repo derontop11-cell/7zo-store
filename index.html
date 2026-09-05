@@ -50,18 +50,6 @@
       border-bottom: 2px solid #f4f6f8;
       padding-bottom: 10px;
     }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    input {
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 15px;
-    }
     .btn {
       background: #2563eb;
       color: white;
@@ -96,9 +84,10 @@
       background: #111;
       color: #fff;
       border: none;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
     }
     .total-box {
       font-size: 18px;
@@ -116,22 +105,10 @@
     <div class="cart-badge" id="cartCount">السلة: 0</div>
   </div>
 
-  <!-- لوحة إضافة المنتجات -->
-  <div class="card">
-    <h2>إضافة صنف جديد</h2>
-    <div class="input-group">
-      <input type="text" id="pName" placeholder="اسم المنتج">
-      <input type="number" id="pPrice" placeholder="السعر (ر.س)">
-      <button class="btn" onclick="addProduct()">إضافة للمتجر</button>
-    </div>
-  </div>
-
   <!-- المنتجات المتاحة -->
   <div class="card">
     <h2>المنتجات المتاحة</h2>
-    <div id="productList">
-      <p style="color: #888; text-align: center;">لا توجد منتجات مضافة بعد.</p>
-    </div>
+    <div id="productList"></div>
   </div>
 
   <!-- سلة الشراء -->
@@ -150,39 +127,29 @@
   </div>
 
   <script>
-    // رقم الواتساب المباشر الخاص بك
     const MY_PHONE_NUMBER = "966540627729"; 
 
-    let products = [];
+    // المنتجات الدائمة المضافة لمتجرك
+    let products = [
+      { id: 1, name: "يوزر تيك توك رباعي عشوائي", price: 9 },
+      { id: 2, name: "يوزر تيك توك شبه ثلاثي", price: 19 },
+      { id: 3, name: "يوزر تيك توك ثلاثي عشوائي", price: 29 },
+      { id: 4, name: "يوزر تيك توك ثلاثي مكرر", price: 39 }
+    ];
+
     let cart = [];
 
-    function addProduct() {
-      const name = document.getElementById('pName').value;
-      const price = parseFloat(document.getElementById('pPrice').value);
-
-      if (!name || isNaN(price)) {
-        alert("يرجى إدخال اسم المنتج وسعره بشكل صحيح");
-        return;
-      }
-
-      products.push({ id: Date.now(), name, price });
-      document.getElementById('pName').value = '';
-      document.getElementById('pPrice').value = '';
+    window.onload = function() {
       renderProducts();
-    }
+    };
 
     function renderProducts() {
       const pList = document.getElementById('productList');
-      if (products.length === 0) {
-        pList.innerHTML = '<p style="color: #888; text-align: center;">لا توجد منتجات مضافة بعد.</p>';
-        return;
-      }
-
       pList.innerHTML = products.map(p => `
         <div class="product-item">
           <div>
             <strong>${p.name}</strong><br>
-            <small style="color: #666;">${p.price} ر.س</small>
+            <small style="color: #2563eb; font-weight: bold;">${p.price} ر.س</small>
           </div>
           <button class="btn-sm" onclick="addToCart(${p.id})">إضافة للسلة</button>
         </div>
@@ -213,7 +180,7 @@
       cList.innerHTML = cart.map((c, index) => `
         <div class="cart-item">
           <span>${c.name} - ${c.price} ر.س</span>
-          <button style="background:red; color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer;" onclick="removeFromCart(${index})">إزالة</button>
+          <button style="background:#dc2626; color:#fff; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;" onclick="removeFromCart(${index})">إزالة</button>
         </div>
       `).join('');
 
@@ -228,11 +195,11 @@
 
     function sendToWhatsApp() {
       if (cart.length === 0) {
-        alert("السلة فارغة! يرجى إضافة منتجات أولاً.");
+        alert("السلة فارغة! يرجى اختيار منتج أولاً.");
         return;
       }
 
-      let message = "مرحباً متجر 7zo 👋%0Aأريد إتمام طلب المنتجات التالية:%0A%0A";
+      let message = "مرحباً متجر 7zo 👋%0Aأريد شراء اليوزرات التالية:%0A%0A";
       
       cart.forEach((item, index) => {
         message += `${index + 1}. ${item.name} - ${item.price} ر.س%0A`;
@@ -240,7 +207,7 @@
 
       const total = cart.reduce((sum, item) => sum + item.price, 0);
       message += `%0A*المبلغ الإجمالي:* ${total} ر.س%0A`;
-      message += `%0Aيرجى تزويدي بحساب التحويل (أو تحويل Apple Pay) لإرسال المبلغ وإتمام الطلب.`;
+      message += `%0Aيرجى تزويدي بطريقة الدفع (Apple Pay / تحويل بنكي) لاستلام اليوزر.`;
 
       const whatsappUrl = `https://wa.me/${MY_PHONE_NUMBER}?text=${message}`;
       window.open(whatsappUrl, '_blank');
